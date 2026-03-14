@@ -1,7 +1,6 @@
 import tkinter as tk
 import random
 
-# ---------------- CONFIG ----------------
 ROWS = 10
 COLS = 10
 CELL = 60
@@ -19,7 +18,6 @@ SNAKE_COLOR = "#2E8B57"
 LADDER_COLOR = "#2F3640"
 PLAYER_COLOR = "#2980B9"
 
-# ---------------- WINDOW ----------------
 root = tk.Tk()
 root.title("Snakes and Ladders")
 root.configure(bg=BG)
@@ -35,7 +33,6 @@ canvas.pack(pady=10)
 
 cells = {}
 
-# ---------------- DRAW BOARD ----------------
 def draw_board():
     num = 1
     reverse = False
@@ -69,7 +66,6 @@ def draw_board():
 
 draw_board()
 
-# ---------------- SNAKES & LADDERS ----------------
 snakes = {
     99: 78,
     95: 56,
@@ -99,7 +95,7 @@ def draw_snake(start, end):
     x2, y2 = cells[end]
 
     segments = 22
-    amplitude = 18   # how wavy the snake is
+    amplitude = 18  
     body_radius = 10
 
     dx = (x2 - x1) / segments
@@ -110,10 +106,8 @@ def draw_snake(start, end):
     for i in range(segments):
         t = i / segments
 
-        # taper tail
         radius = body_radius * (0.4 + 0.6 * (1 - t))
 
-        # sine wave offset (this creates snake motion)
         offset = math.sin(t * math.pi * 4) * amplitude
 
         ox = offset * math.cos(angle + math.pi/2)
@@ -129,7 +123,6 @@ def draw_snake(start, end):
             outline=""
         )
 
-    # -------- HEAD --------
     head_radius = body_radius * 1.2
     canvas.create_oval(
         x1-head_radius, y1-head_radius,
@@ -138,7 +131,6 @@ def draw_snake(start, end):
         outline=""
     )
 
-    # eyes
     eye_offset = 4
     canvas.create_oval(
         x1-eye_offset-2, y1-eye_offset-2,
@@ -175,7 +167,6 @@ for s,e in snakes.items():
 for s,e in ladders.items():
     draw_ladder(s,e)
 
-# ---------------- PLAYER ----------------
 player_pos = 1
 moves = 0
 
@@ -190,7 +181,6 @@ def move_player(pos):
     x,y = cells[pos]
     canvas.coords(player, x-10, y-10, x+10, y+10)
 
-# ---------------- UI CONTROLS ----------------
 panel = tk.Frame(root, bg=BG)
 panel.pack(pady=10)
 
