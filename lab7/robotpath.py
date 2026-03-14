@@ -19,7 +19,6 @@ class Node:
 
 class PathPlanningVisualizer:
     def __init__(self, root, grid_size=20, cell_size=30):
-        # Initialize state variables first
         self.current_algorithm = None
         self.open_set = []
         self.closed_set = set()
@@ -33,14 +32,12 @@ class PathPlanningVisualizer:
             'start_time': 0
         }
 
-        # Initialize window and grid parameters
         self.root = root
         self.root.title("Path Planning Visualization")
         self.grid_size = grid_size
         self.cell_size = cell_size
         self.grid = [[0 for _ in range(grid_size)] for _ in range(grid_size)]
 
-        # Start and goal positions (Inferred as sources cut off after this comment)
         self.start = (0, 0)
         self.goal = (grid_size - 1, grid_size - 1)
 
@@ -48,11 +45,9 @@ class PathPlanningVisualizer:
         self.draw_grid()
 
     def setup_ui(self):
-        # Main control frame
         control_frame = ttk.Frame(self.root)
         control_frame.pack(side=tk.TOP, fill=tk.X, padx=5, pady=5)
 
-        # Algorithm selection
         ttk.Label(control_frame, text="Algorithm:").pack(side=tk.LEFT)
         self.algo_var = tk.StringVar(value="A* (Manhattan)")
         algo_menu = ttk.OptionMenu(control_frame, self.algo_var,
@@ -63,7 +58,6 @@ class PathPlanningVisualizer:
                                    "Uniform Cost")
         algo_menu.pack(side=tk.LEFT, padx=5)
 
-        # Control buttons
         ttk.Button(control_frame, text="Generate New Obstacles",
                    command=self.generate_obstacles).pack(side=tk.LEFT, padx=5)
         ttk.Button(control_frame, text="Clear Path",
@@ -71,14 +65,12 @@ class PathPlanningVisualizer:
         ttk.Button(control_frame, text="Start Search",
                    command=self.start_search).pack(side=tk.LEFT, padx=5)
 
-        # Speed control
         ttk.Label(control_frame, text="Speed:").pack(side=tk.LEFT, padx=5)
         self.speed_scale = ttk.Scale(control_frame, from_=1, to=200,
                                      orient=tk.HORIZONTAL, length=100)
         self.speed_scale.set(100)
         self.speed_scale.pack(side=tk.LEFT)
 
-        # Metrics frame
         metrics_frame = ttk.LabelFrame(self.root, text="Algorithm Metrics")
         metrics_frame.pack(side=tk.TOP, fill=tk.X, padx=5, pady=5)
 
@@ -96,13 +88,11 @@ class PathPlanningVisualizer:
             label.grid(row=i//2, column=i%2*2+1, padx=5, pady=2, sticky='w')
             self.metrics_labels[metric_key] = label
 
-        # Canvas for grid
         self.canvas = tk.Canvas(self.root,
                                 width=self.grid_size * self.cell_size,
                                 height=self.grid_size * self.cell_size)
         self.canvas.pack(padx=10, pady=10)
 
-        # Bind canvas clicks
         self.canvas.bind("<Button-1>", self.on_canvas_click)
 
     def draw_grid(self):
@@ -115,8 +105,7 @@ class PathPlanningVisualizer:
                 x2 = x1 + self.cell_size
                 y2 = y1 + self.cell_size
 
-                # Color based on cell type
-                if self.grid[i][j] == 1: # Obstacle
+                if self.grid[i][j] == 1: 
                     color = "black"
                 elif (i, j) == self.start:
                     color = "green"
@@ -125,8 +114,7 @@ class PathPlanningVisualizer:
                 elif (i, j) in self.closed_set:
                     color = "light blue"
                 elif any(node.position == (i, j) for node in self.open_set if isinstance(node, Node)):
-                    # Note: BFS uses deque (not Node objects directly in list sometimes), A* uses Nodes
-                    # Simplified check for visualization compatibility across algos
+
                     color = "yellow"
                 elif (i, j) in self.path:
                     color = "blue"
@@ -136,19 +124,16 @@ class PathPlanningVisualizer:
                 self.canvas.create_rectangle(x1, y1, x2, y2,
                                              fill=color, outline="gray")
 
-    # Added to handle click interaction (Source binds it, but definition is missing in images)
     def on_canvas_click(self, event):
         row = event.y // self.cell_size
         col = event.x // self.cell_size
         if 0 <= row < self.grid_size and 0 <= col < self.grid_size:
             if (row, col) != self.start and (row, col) != self.goal:
-                # Toggle obstacle
                 self.grid[row][col] = 1 if self.grid[row][col] == 0 else 0
                 self.draw_grid()
 
     def generate_obstacles(self):
         self.clear_path()
-        # Generate random obstacles (30% of grid)
         for i in range(self.grid_size):
             for j in range(self.grid_size):
                 if (i, j) != self.start and (i, j) != self.goal:
@@ -161,14 +146,10 @@ class PathPlanningVisualizer:
         self.path = []
         self.current_algorithm = None
 
-        # Clear metrics
         for key in self.metrics:
             self.metrics[key] = 0
         self.update_metrics()
 
-        # Clear everything except obstacles
-        # Note: Logic in source implies keeping obstacles (grid=1) but clearing others
-        # However, the visualizer relies on open_set/closed_set variables which are reset above.
         self.draw_grid()
 
     def manhattan_distance(self, pos1, pos2):
@@ -223,9 +204,9 @@ class PathPlanningVisualizer:
         for i in range(len(path)-1):
             dx = abs(path[i+1][0] - path[i][0])
             dy = abs(path[i+1][1] - path[i][1])
-            if dx + dy == 2: # Diagonal move
+            if dx + dy == 2: 
                 cost += 1.4
-            else: # Horizontal or vertical move
+            else: 
                 cost += 1
         return round(cost, 2)
 
@@ -242,7 +223,7 @@ class PathPlanningVisualizer:
 
             start_node = Node(self.start, g_cost=0,
                               h_cost=heuristic(self.start, self.goal))
-            self.open_set = [] # Ensure it's a list for heapq
+            self.open_set = [] 
             heapq.heappush(self.open_set, start_node)
 
         elif algorithm == "BFS":
@@ -265,9 +246,9 @@ class PathPlanningVisualizer:
             result = self.current_algorithm()
             self.draw_grid()
 
-            if result: # Search finished
+            if result: 
                 self.calculate_metrics(self.path, self.metrics['start_time'])
-            else: # Search not finished
+            else: 
                 self.root.after(self.step_delay, self.step_search)
 
     def a_star_step(self):
@@ -289,7 +270,6 @@ class PathPlanningVisualizer:
             if neighbor_pos in self.closed_set:
                 continue
 
-            # Cost calculation: 1.4 for diagonal, 1 for straight
             dx = abs(neighbor_pos[0] - current.position[0])
             dy = abs(neighbor_pos[1] - current.position[1])
             g_cost = current.g_cost + (1.4 if allow_diagonal and dx + dy == 2 else 1)
@@ -301,7 +281,6 @@ class PathPlanningVisualizer:
             neighbor = Node(neighbor_pos, g_cost, h_cost)
             neighbor.parent = current
 
-            # Check if neighbor is in open set with lower g_cost
             if not any(n.position == neighbor_pos and n.g_cost <= g_cost
                        for n in self.open_set):
                 heapq.heappush(self.open_set, neighbor)
@@ -358,8 +337,7 @@ class PathPlanningVisualizer:
                 heapq.heappush(self.open_set, neighbor)
 
         return False
-
-# Main Execution (Standard boilerplate to run the class)
+    
 if __name__ == "__main__":
     root = tk.Tk()
     app = PathPlanningVisualizer(root)
